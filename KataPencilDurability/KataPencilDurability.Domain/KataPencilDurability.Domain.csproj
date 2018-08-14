@@ -42,7 +42,7 @@
   <ItemGroup>
     <Compile Include="Interfaces\IEraser.cs" />
     <Compile Include="Interfaces\IPencil.cs" />
-    <Compile Include="Pencil.cs" />
+    <Compile Include="Ticonderoga.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
