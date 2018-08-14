@@ -15,5 +15,23 @@ namespace KataPencilDurability.Tests
             Assert.AreEqual(pencil.MaximumNumberOfSharpenings, 20);
             Assert.AreEqual(pencil.EraserLetterCapacity, 30);
         }
+
+        [TestMethod, TestCategory("Pencil Creation")]
+        public void Constructor_NegativeLetterAmount_Throws()
+        {
+            Assert.ThrowsException<ArgumentOutOfRangeException>(() => new Ticonderoga(-10, 20, 30), "Letter capacity must be greater than 0"); 
+        }
+
+        [TestMethod, TestCategory("Pencil Creation")]
+        public void Constructor_NegativeSharpeningAmount_Throws()
+        {
+            Assert.ThrowsException<ArgumentOutOfRangeException>(() => new Ticonderoga(10, -20, 30), "Maximum sharpenings must be greater than 0");
+        }
+
+        [TestMethod, TestCategory("Pencil Creation")]
+        public void Constructor_NegativeEraserAmount_Throws()
+        {
+            Assert.ThrowsException<ArgumentOutOfRangeException>(() => new Ticonderoga(10, 20, -30), "Eraser Capacity must be greater than 0");
+        }
     }
 }

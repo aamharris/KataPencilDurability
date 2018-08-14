@@ -11,6 +11,21 @@ namespace KataPencilDurability.Domain
 
         public Ticonderoga(int letterCapacity, int maxNumberOfSharpenings, int eraserLetterCapacity)
         {
+            if (letterCapacity <= 0)
+            {
+                throw new ArgumentOutOfRangeException("Letter capacity must be greater than 0"); 
+            }
+
+            if (maxNumberOfSharpenings <= 0)
+            {
+                throw new ArgumentOutOfRangeException("Maximum sharpenings must be greater than 0");
+            }
+
+            if (eraserLetterCapacity <= 0)
+            {
+                throw new ArgumentOutOfRangeException("Eraser Capacity must be greater than 0");
+            }
+
             this.LetterCapacityPerSharpening = letterCapacity;
             this.MaximumNumberOfSharpenings = maxNumberOfSharpenings; 
             this.EraserLetterCapacity = eraserLetterCapacity; 
