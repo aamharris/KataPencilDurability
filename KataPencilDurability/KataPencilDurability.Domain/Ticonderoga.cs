@@ -50,9 +50,17 @@ namespace KataPencilDurability.Domain
             }
         }
 
-        public void Write(char character)
+        public char Write(char inputChar)
         {
-            throw new NotImplementedException();
+            if (inputChar != ' ' && CurrentLetterCount < LetterCapacityPerSharpening)
+            {
+                CurrentLetterCount += 1; 
+                return inputChar; 
+            }
+            else
+            {
+                return ' '; 
+            }
         }
 
         public void Erase(string eraseText)

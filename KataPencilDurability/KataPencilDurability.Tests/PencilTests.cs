@@ -49,5 +49,41 @@ namespace KataPencilDurability.Tests
             pencil.Sharpen();
             Assert.AreEqual(1, pencil.CurrentSharpeningCount); 
         }
+
+        [TestMethod, TestCategory("Pencil Write")]
+        public void Write_WhenGivenALetterWithCapacity_WillReturnThatLetter()
+        {
+            var pencil = new Ticonderoga(10, 10, 20);
+            var output = pencil.Write('a'); 
+            Assert.AreEqual('a', output);
+        }
+
+        [TestMethod, TestCategory("Pencil Write")]
+        public void Write_WhenGivenASpaceWithCapacity_WillReturnASpace()
+        {
+            var pencil = new Ticonderoga(10, 10, 20);
+            var output = pencil.Write(' ');
+            Assert.AreEqual(' ', output);
+        }
+
+        [TestMethod, TestCategory("Pencil Write")]
+        public void Write_WhenGivenALetterWithNoCapacity_WillReturnASpace()
+        {
+            var pencil = new Ticonderoga(1, 10, 20);
+            var firstOutput = pencil.Write('a');
+            var secondOutput = pencil.Write('b');
+
+            Assert.AreEqual('a', firstOutput);
+            Assert.AreEqual(' ', secondOutput);
+        }
+
+        [TestMethod, TestCategory("Pencil Write")]
+        public void Write_InputCharAsASpace_DoesNotIncreaseLetterCount()
+        {
+            var pencil = new Ticonderoga(1, 10, 20);
+            var output = pencil.Write(' ');           
+
+            Assert.AreEqual(0, pencil.CurrentLetterCount);
+        }
     }
 }

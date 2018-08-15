@@ -6,7 +6,7 @@
 
         int MaximumNumberOfSharpenings { get; set; }
 
-        void Write(char character);
+        char Write(char inputChar);
 
         void Sharpen();            
     }
