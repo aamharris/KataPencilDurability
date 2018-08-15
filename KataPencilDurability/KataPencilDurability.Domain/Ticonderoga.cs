@@ -8,6 +8,9 @@ namespace KataPencilDurability.Domain
         public int LetterCapacityPerSharpening { get; set; }
         public int MaximumNumberOfSharpenings { get; set; }
         public int EraserLetterCapacity { get; set; }
+        public int CurrentLetterCount { get; private set; }
+        public int CurrentSharpeningCount { get; private set; }
+        public int CurrentEraserCount { get; private set; }
 
         public Ticonderoga(int letterCapacity, int maxNumberOfSharpenings, int eraserLetterCapacity)
         {
@@ -26,14 +29,25 @@ namespace KataPencilDurability.Domain
                 throw new ArgumentOutOfRangeException("Eraser Capacity must be greater than 0");
             }
 
-            this.LetterCapacityPerSharpening = letterCapacity;
-            this.MaximumNumberOfSharpenings = maxNumberOfSharpenings; 
-            this.EraserLetterCapacity = eraserLetterCapacity; 
+            LetterCapacityPerSharpening = letterCapacity;
+            MaximumNumberOfSharpenings = maxNumberOfSharpenings;
+            EraserLetterCapacity = eraserLetterCapacity;
+            CurrentLetterCount = 0;
+            CurrentSharpeningCount = 0;
+            CurrentEraserCount = 0; 
         }     
 
         public void Sharpen()
         {
-            throw new NotImplementedException();
+            if (CurrentSharpeningCount < MaximumNumberOfSharpenings)
+            {
+                CurrentSharpeningCount += 1;
+                CurrentLetterCount = 0; 
+            }
+            else
+            {
+                throw new Exception("Pencil can not be sharpened anymore. Please buy a new pencil."); 
+            }
         }
 
         public void Write(char character)

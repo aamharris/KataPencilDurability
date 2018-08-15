@@ -33,5 +33,21 @@ namespace KataPencilDurability.Tests
         {
             Assert.ThrowsException<ArgumentOutOfRangeException>(() => new Ticonderoga(10, 20, -30), "Eraser Capacity must be greater than 0");
         }
+
+        [TestMethod, TestCategory("Pencil Sharpen")]
+        public void SharpenPencil_WhenMaxSharpeningsReached_Throws()
+        {
+            var pencil = new Ticonderoga(10, 1, 20);
+            pencil.Sharpen();
+            Assert.ThrowsException<Exception>(() => pencil.Sharpen(), "Pencil can not be sharpened anymore. Please buy a new pencil.");
+        }
+
+        [TestMethod, TestCategory("Pencil Sharpen")]
+        public void SharpenPencil_WhenSharpened_IncreasesCurrentSharpeningCount()
+        {
+            var pencil = new Ticonderoga(10, 10, 20);
+            pencil.Sharpen();
+            Assert.AreEqual(1, pencil.CurrentSharpeningCount); 
+        }
     }
 }
