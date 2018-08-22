@@ -2,11 +2,11 @@
 {
     public interface IPencil
     {
-        int LetterCapacityPerSharpening { get; set; }
+        int PointDurabilityPerSharpening { get; set; }
 
         int MaximumNumberOfSharpenings { get; set; }
 
-        char Write(char inputChar);
+        char? Write(char inputChar);
 
         void Sharpen();            
     }

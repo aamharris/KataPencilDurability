@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KataPencilDurability.Busine
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KataPencilDurability.Tests", "KataPencilDurability.Tests\KataPencilDurability.Tests.csproj", "{87E645B3-03B0-4DAE-B21B-5508A76C4671}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KataPencilDurability.Domain", "KataPencilDurability.Domain\KataPencilDurability.Domain.csproj", "{30346EF7-DCF3-4FF5-9D7E-765639FB9357}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{87E645B3-03B0-4DAE-B21B-5508A76C4671}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{87E645B3-03B0-4DAE-B21B-5508A76C4671}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{87E645B3-03B0-4DAE-B21B-5508A76C4671}.Release|Any CPU.Build.0 = Release|Any CPU
+		{30346EF7-DCF3-4FF5-9D7E-765639FB9357}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{30346EF7-DCF3-4FF5-9D7E-765639FB9357}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{30346EF7-DCF3-4FF5-9D7E-765639FB9357}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{30346EF7-DCF3-4FF5-9D7E-765639FB9357}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

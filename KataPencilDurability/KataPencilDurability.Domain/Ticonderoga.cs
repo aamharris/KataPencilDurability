@@ -5,16 +5,16 @@ namespace KataPencilDurability.Domain
 {
     public class Ticonderoga : IPencil, IEraser
     {
-        public int LetterCapacityPerSharpening { get; set; }
+        public int PointDurabilityPerSharpening { get; set; }
         public int MaximumNumberOfSharpenings { get; set; }
         public int EraserLetterCapacity { get; set; }
-        public int CurrentLetterCount { get; private set; }
+        public int CurrentPointDegradation { get; private set; }
         public int CurrentSharpeningCount { get; private set; }
         public int CurrentEraserCount { get; private set; }
 
-        public Ticonderoga(int letterCapacity, int maxNumberOfSharpenings, int eraserLetterCapacity)
+        public Ticonderoga(int pointDurability, int maxNumberOfSharpenings, int eraserLetterCapacity)
         {
-            if (letterCapacity <= 0)
+            if (pointDurability <= 0)
             {
                 throw new ArgumentOutOfRangeException("Letter capacity must be greater than 0"); 
             }
@@ -29,10 +29,10 @@ namespace KataPencilDurability.Domain
                 throw new ArgumentOutOfRangeException("Eraser Capacity must be greater than 0");
             }
 
-            LetterCapacityPerSharpening = letterCapacity;
+            PointDurabilityPerSharpening = pointDurability;
             MaximumNumberOfSharpenings = maxNumberOfSharpenings;
             EraserLetterCapacity = eraserLetterCapacity;
-            CurrentLetterCount = 0;
+            CurrentPointDegradation = 0;
             CurrentSharpeningCount = 0;
             CurrentEraserCount = 0; 
         }     
@@ -42,7 +42,7 @@ namespace KataPencilDurability.Domain
             if (CurrentSharpeningCount < MaximumNumberOfSharpenings)
             {
                 CurrentSharpeningCount += 1;
-                CurrentLetterCount = 0; 
+                CurrentPointDegradation = 0; 
             }
             else
             {
@@ -50,11 +50,29 @@ namespace KataPencilDurability.Domain
             }
         }
 
-        public char Write(char inputChar)
+        public char? Write(char inputChar)
         {
-            if (inputChar != ' ' && CurrentLetterCount < LetterCapacityPerSharpening)
+            if (char.IsUpper(inputChar))
             {
-                CurrentLetterCount += 1; 
+                if (PointDurabilityPerSharpening - CurrentPointDegradation >= 2)
+                {
+                    CurrentPointDegradation += 2;
+                    return inputChar;
+                }
+                else if ((PointDurabilityPerSharpening - CurrentPointDegradation == 1))
+                {
+                    //Requirements don't say what to do with a capital letter with only 1 point durability left. 
+                    //Because the pencil can still write a lower case, this logic will return nothing and will not increase the point.
+                    return null; 
+                }
+                else
+                {
+                    return ' '; 
+                }
+            }
+            else if (char.IsLower(inputChar) && CurrentPointDegradation < PointDurabilityPerSharpening)
+            {
+                CurrentPointDegradation += 1; 
                 return inputChar; 
             }
             else

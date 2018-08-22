@@ -11,7 +11,7 @@ namespace KataPencilDurability.Tests
         public void Constructor_ValidAmounts_SetsPencilProperties()
         {
             var pencil = new Ticonderoga(10, 20, 30);
-            Assert.AreEqual(pencil.LetterCapacityPerSharpening, 10);
+            Assert.AreEqual(pencil.PointDurabilityPerSharpening, 10);
             Assert.AreEqual(pencil.MaximumNumberOfSharpenings, 20);
             Assert.AreEqual(pencil.EraserLetterCapacity, 30);
         }
@@ -78,12 +78,21 @@ namespace KataPencilDurability.Tests
         }
 
         [TestMethod, TestCategory("Pencil Write")]
-        public void Write_InputCharAsASpace_DoesNotIncreaseLetterCount()
+        public void Write_WhenGivenACapitalLetterWithOneCapacity_WillReturnNull()
+        {
+            var pencil = new Ticonderoga(1, 10, 20);
+            var output = pencil.Write('A');           
+
+            Assert.AreEqual(output, null);
+        }
+
+        [TestMethod, TestCategory("Pencil Write")]
+        public void Write_InputCharAsASpace_DoesNotIncreasePointDegradation()
         {
             var pencil = new Ticonderoga(1, 10, 20);
             var output = pencil.Write(' ');           
 
-            Assert.AreEqual(0, pencil.CurrentLetterCount);
+            Assert.AreEqual(0, pencil.CurrentPointDegradation);
         }
     }
 }
