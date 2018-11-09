@@ -1,98 +1,76 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using KataPencilDurability.Domain;
+using System;
 
 namespace KataPencilDurability.Tests
 {
     [TestClass]
     public class PencilTests
-    {
-        [TestMethod, TestCategory("Pencil Creation")]
-        public void Constructor_ValidAmounts_SetsPencilProperties()
+    {        
+        [TestMethod, TestCategory("Pencil Write")]
+        public void Write_AddsTextToPaper_WithExistingText()
         {
-            var pencil = new Ticonderoga(10, 20, 30);
-            Assert.AreEqual(pencil.PointDurabilityPerSharpening, 10);
-            Assert.AreEqual(pencil.MaximumNumberOfSharpenings, 20);
-            Assert.AreEqual(pencil.EraserLetterCapacity, 30);
+            var paper = new Paper("She sells sea shells"); 
+            var pencil = new Pencil(new PencilProperties() { Paper = paper, PointDegradation = 50 });
+
+            pencil.Write(" down by the sea shore");           
+
+            Assert.AreEqual("She sells sea shells down by the sea shore", paper.Text);
         }
 
-        [TestMethod, TestCategory("Pencil Creation")]
-        public void Constructor_NegativeLetterAmount_Throws()
+        [TestMethod, TestCategory("Pencil Write")]
+        public void Write_HasDegradationOfZero_WhenLettersMatchDegradationCalc()
         {
-            Assert.ThrowsException<ArgumentOutOfRangeException>(() => new Ticonderoga(-10, 20, 30), "Letter capacity must be greater than 0"); 
+            var paper = new Paper();
+            var pencil = new Pencil(new PencilProperties() { Paper = paper, PointDegradation = 4 });
+
+            pencil.Write("text");
+
+            Assert.AreEqual("text", paper.Text);
+            Assert.IsTrue(pencil.PointDegradationRemaining == 0);
         }
 
-        [TestMethod, TestCategory("Pencil Creation")]
-        public void Constructor_NegativeSharpeningAmount_Throws()
+        [TestMethod, TestCategory("Pencil Write")]
+        public void Write_LeavesSpaces_AfterDegradationIsAtZero()
         {
-            Assert.ThrowsException<ArgumentOutOfRangeException>(() => new Ticonderoga(10, -20, 30), "Maximum sharpenings must be greater than 0");
+            var paper = new Paper();
+            var pencil = new Pencil(new PencilProperties() { Paper = paper, PointDegradation = 4 });
+
+            pencil.Write("Text");
+
+            Assert.AreEqual("Tex ", paper.Text);
+            Assert.IsTrue(pencil.PointDegradationRemaining == 0);
         }
 
-        [TestMethod, TestCategory("Pencil Creation")]
-        public void Constructor_NegativeEraserAmount_Throws()
+        [TestMethod, TestCategory("Pencil Write")]
+        public void Write_WhenUsingSpaces_DoesNotAffectDegradation()
         {
-            Assert.ThrowsException<ArgumentOutOfRangeException>(() => new Ticonderoga(10, 20, -30), "Eraser Capacity must be greater than 0");
+            var paper = new Paper();
+            var pencil = new Pencil(new PencilProperties() { Paper = paper, PointDegradation = 10 });
+
+            pencil.Write("a b c");
+
+            Assert.AreEqual("a b c", paper.Text);
+            Assert.IsTrue(pencil.PointDegradationRemaining == 7);
         }
+
+        //[TestMethod, TestCategory("Pencil Sharpen")]
+        //public void SharpenPencil_WhenMaxSharpeningsReached_Throws()
+        //{
+        //    var paper = new Paper();
+        //    var pencil = new Pencil(new PencilProperties() { Paper = paper, PointDegradation = 10, MaxNumberOfSharpenings = 1 }); 
+        //    pencil.Sharpen();
+        //    Assert.ThrowsException<Exception>(() => pencil.Sharpen(), "Pencil can not be sharpened anymore. Please buy a new pencil.");
+        //}
 
         [TestMethod, TestCategory("Pencil Sharpen")]
-        public void SharpenPencil_WhenMaxSharpeningsReached_Throws()
+        public void SharpenPencil_RestoresPointDurability_WhenSharpened()
         {
-            var pencil = new Ticonderoga(10, 1, 20);
+            var paper = new Paper();
+            var pencil = new Pencil(new PencilProperties() { Paper = paper, PointDegradation = 10, MaxNumberOfSharpenings = 3 });
+            pencil.Write("some text"); 
             pencil.Sharpen();
-            Assert.ThrowsException<Exception>(() => pencil.Sharpen(), "Pencil can not be sharpened anymore. Please buy a new pencil.");
-        }
-
-        [TestMethod, TestCategory("Pencil Sharpen")]
-        public void SharpenPencil_WhenSharpened_IncreasesCurrentSharpeningCount()
-        {
-            var pencil = new Ticonderoga(10, 10, 20);
-            pencil.Sharpen();
-            Assert.AreEqual(1, pencil.CurrentSharpeningCount); 
-        }
-
-        [TestMethod, TestCategory("Pencil Write")]
-        public void Write_WhenGivenALetterWithCapacity_WillReturnThatLetter()
-        {
-            var pencil = new Ticonderoga(10, 10, 20);
-            var output = pencil.Write('a'); 
-            Assert.AreEqual('a', output);
-        }
-
-        [TestMethod, TestCategory("Pencil Write")]
-        public void Write_WhenGivenASpaceWithCapacity_WillReturnASpace()
-        {
-            var pencil = new Ticonderoga(10, 10, 20);
-            var output = pencil.Write(' ');
-            Assert.AreEqual(' ', output);
-        }
-
-        [TestMethod, TestCategory("Pencil Write")]
-        public void Write_WhenGivenALetterWithNoCapacity_WillReturnASpace()
-        {
-            var pencil = new Ticonderoga(1, 10, 20);
-            var firstOutput = pencil.Write('a');
-            var secondOutput = pencil.Write('b');
-
-            Assert.AreEqual('a', firstOutput);
-            Assert.AreEqual(' ', secondOutput);
-        }
-
-        [TestMethod, TestCategory("Pencil Write")]
-        public void Write_WhenGivenACapitalLetterWithOneCapacity_WillReturnNull()
-        {
-            var pencil = new Ticonderoga(1, 10, 20);
-            var output = pencil.Write('A');           
-
-            Assert.AreEqual(output, null);
-        }
-
-        [TestMethod, TestCategory("Pencil Write")]
-        public void Write_InputCharAsASpace_DoesNotIncreasePointDegradation()
-        {
-            var pencil = new Ticonderoga(1, 10, 20);
-            var output = pencil.Write(' ');           
-
-            Assert.AreEqual(0, pencil.CurrentPointDegradation);
+            Assert.AreEqual(10, pencil.PointDegradationRemaining);
         }
     }
 }
