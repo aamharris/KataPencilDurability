@@ -54,14 +54,14 @@ namespace KataPencilDurability.Tests
             Assert.IsTrue(pencil.PointDegradationRemaining == 7);
         }
 
-        //[TestMethod, TestCategory("Pencil Sharpen")]
-        //public void SharpenPencil_WhenMaxSharpeningsReached_Throws()
-        //{
-        //    var paper = new Paper();
-        //    var pencil = new Pencil(new PencilProperties() { Paper = paper, PointDegradation = 10, MaxNumberOfSharpenings = 1 }); 
-        //    pencil.Sharpen();
-        //    Assert.ThrowsException<Exception>(() => pencil.Sharpen(), "Pencil can not be sharpened anymore. Please buy a new pencil.");
-        //}
+        [TestMethod, TestCategory("Pencil Sharpen")]
+        public void SharpenPencil_WhenMaxSharpeningsReached_Throws()
+        {
+            var paper = new Paper();
+            var pencil = new Pencil(new PencilProperties() { Paper = paper, PointDegradation = 10, MaxNumberOfSharpenings = 1 }); 
+            pencil.Sharpen(); //first time to get the count to 0
+            Assert.ThrowsException<Exception>(() => pencil.Sharpen(), "Pencil can not be sharpened anymore. Please buy a new pencil.");
+        }
 
         [TestMethod, TestCategory("Pencil Sharpen")]
         public void SharpenPencil_RestoresPointDurability_WhenSharpened()
@@ -71,6 +71,16 @@ namespace KataPencilDurability.Tests
             pencil.Write("some text"); 
             pencil.Sharpen();
             Assert.AreEqual(10, pencil.PointDegradationRemaining);
+        }
+
+        [TestMethod, TestCategory("Pencil Sharpen")]
+        public void SharpenPencil_DeductsSharpeningsRemaining_WhenSharpened()
+        {
+            var paper = new Paper();
+            var pencil = new Pencil(new PencilProperties() { Paper = paper, PointDegradation = 10, MaxNumberOfSharpenings = 3 });
+            pencil.Write("some text");
+            pencil.Sharpen();
+            Assert.AreEqual(2, pencil.SharpeningsRemaining);
         }
     }
 }
