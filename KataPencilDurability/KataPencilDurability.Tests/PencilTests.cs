@@ -8,7 +8,7 @@ namespace KataPencilDurability.Tests
     public class PencilTests
     {        
         [TestMethod, TestCategory("Pencil Write")]
-        public void Write_AddsTextToPaper_WithExistingText()
+        public void Pencil_WhenWritingText_AddsTextToExisitingPaperText()
         {
             var paper = new Paper("She sells sea shells"); 
             var pencil = new Pencil(new PencilProperties() { Paper = paper, PointDegradation = 50 });
@@ -19,7 +19,7 @@ namespace KataPencilDurability.Tests
         }
 
         [TestMethod, TestCategory("Pencil Write")]
-        public void Write_HasDegradationOfZero_WhenLettersMatchDegradationCalc()
+        public void Pencil_WhenLettersMatchDegradationCalc_HasDegradationOfZero()
         {
             var paper = new Paper();
             var pencil = new Pencil(new PencilProperties() { Paper = paper, PointDegradation = 4 });
@@ -31,7 +31,7 @@ namespace KataPencilDurability.Tests
         }
 
         [TestMethod, TestCategory("Pencil Write")]
-        public void Write_LeavesSpaces_AfterDegradationIsAtZero()
+        public void Pencil_WhenPointDegradationAtZero_LeavesSpacesOnly()
         {
             var paper = new Paper();
             var pencil = new Pencil(new PencilProperties() { Paper = paper, PointDegradation = 4 });
@@ -43,7 +43,7 @@ namespace KataPencilDurability.Tests
         }
 
         [TestMethod, TestCategory("Pencil Write")]
-        public void Write_WhenUsingSpaces_DoesNotAffectDegradation()
+        public void Pencil_WhenWritingSpaces_DoesNotAffectDegradation()
         {
             var paper = new Paper();
             var pencil = new Pencil(new PencilProperties() { Paper = paper, PointDegradation = 10 });
@@ -55,7 +55,7 @@ namespace KataPencilDurability.Tests
         }
 
         [TestMethod, TestCategory("Pencil Sharpen")]
-        public void SharpenPencil_WhenMaxSharpeningsReached_Throws()
+        public void Pencil_WhenMaxSharpeningsReached_Throws()
         {
             var paper = new Paper();
             var pencil = new Pencil(new PencilProperties() { Paper = paper, PointDegradation = 10, MaxNumberOfSharpenings = 1 }); 
@@ -64,7 +64,7 @@ namespace KataPencilDurability.Tests
         }
 
         [TestMethod, TestCategory("Pencil Sharpen")]
-        public void SharpenPencil_RestoresPointDurability_WhenSharpened()
+        public void Pencil_WhenSharpened_RestoresPointDurability()
         {
             var paper = new Paper();
             var pencil = new Pencil(new PencilProperties() { Paper = paper, PointDegradation = 10, MaxNumberOfSharpenings = 3 });
@@ -74,13 +74,31 @@ namespace KataPencilDurability.Tests
         }
 
         [TestMethod, TestCategory("Pencil Sharpen")]
-        public void SharpenPencil_DeductsSharpeningsRemaining_WhenSharpened()
+        public void Pencil_WhenSharpened_DeductsSharpeningsRemaining()
         {
             var paper = new Paper();
             var pencil = new Pencil(new PencilProperties() { Paper = paper, PointDegradation = 10, MaxNumberOfSharpenings = 3 });
             pencil.Write("some text");
             pencil.Sharpen();
             Assert.AreEqual(2, pencil.SharpeningsRemaining);
+        }
+
+        [TestMethod, TestCategory("Pencil Erase")]
+        public void PaperText_WhenErased_RemovesLastInstanceOfWord()
+        {
+            var paper = new Paper("How much wood would a woodchuck chuck if a woodchuck could chuck wood?");
+            var pencil = new Pencil(new PencilProperties() { Paper = paper, PointDegradation = 10, MaxNumberOfSharpenings = 3 });
+            pencil.Erase("chuck"); 
+            Assert.AreEqual("How much wood would a woodchuck chuck if a woodchuck could       wood?", paper.Text);
+        }
+
+        [TestMethod, TestCategory("Pencil Erase")]
+        public void PaperText_WhenErased_RemovesLastInstanceOfCombinedWord()
+        {
+            var paper = new Paper("How much wood would a woodchuck chuck if a woodchuck could       wood?");
+            var pencil = new Pencil(new PencilProperties() { Paper = paper, PointDegradation = 10, MaxNumberOfSharpenings = 3 });
+            pencil.Erase("chuck");
+            Assert.AreEqual("How much wood would a woodchuck chuck if a wood      could       wood?", paper.Text);
         }
     }
 }
