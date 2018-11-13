@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 
 namespace KataPencilDurability.Domain
 {
@@ -12,7 +13,10 @@ namespace KataPencilDurability.Domain
             PointDegradationRemaining = MaxPointDegradation;
 
             MaxNumberOfSharpenings = properties.MaxNumberOfSharpenings;
-            SharpeningsRemaining = MaxNumberOfSharpenings; 
+            SharpeningsRemaining = MaxNumberOfSharpenings;
+
+            MaxEraserDegradation = properties.MaxEraserDegradation;
+            EraserDegradationRemaining = MaxEraserDegradation;           
         }
 
         public Paper Paper { get; set; }
@@ -20,6 +24,8 @@ namespace KataPencilDurability.Domain
         public int PointDegradationRemaining { get; private set; }
         public int MaxNumberOfSharpenings { get; private set; }
         public int SharpeningsRemaining { get; private set; }
+        public int MaxEraserDegradation { get; private set; }
+        public int EraserDegradationRemaining { get; private set; }
 
         public void Write(string inputText)
         {
@@ -39,6 +45,30 @@ namespace KataPencilDurability.Domain
                 {
                     Paper.Text += " "; 
                 }
+            }
+        }
+
+        public void Erase(string textToErase)
+        {
+            if (EraserDegradationRemaining > 0)
+            {
+                string erasedText;
+                if (EraserDegradationRemaining < textToErase.Length)
+                {
+                    int eraseStartIndex = textToErase.Length - EraserDegradationRemaining;
+                    erasedText = textToErase.Remove(eraseStartIndex, EraserDegradationRemaining).Insert(eraseStartIndex, new string(' ', EraserDegradationRemaining)); 
+                }
+                else
+                {
+                    erasedText = new string(' ', textToErase.Length); 
+                }
+                
+                Paper.Text = Regex.Replace(Paper.Text, $"{textToErase}(?!.*{textToErase})", erasedText);
+                EraserDegradationRemaining -= erasedText.Length;
+            }
+            else
+            {
+                throw new Exception("Eraser has been used up. Please buy a new pencil or eraser.");
             }
         }
 

@@ -87,7 +87,7 @@ namespace KataPencilDurability.Tests
         public void PaperText_WhenErased_RemovesLastInstanceOfWord()
         {
             var paper = new Paper("How much wood would a woodchuck chuck if a woodchuck could chuck wood?");
-            var pencil = new Pencil(new PencilProperties() { Paper = paper, PointDegradation = 10, MaxNumberOfSharpenings = 3 });
+            var pencil = new Pencil(new PencilProperties() { Paper = paper, PointDegradation = 10, MaxNumberOfSharpenings = 3, MaxEraserDegradation = 20 });
             pencil.Erase("chuck"); 
             Assert.AreEqual("How much wood would a woodchuck chuck if a woodchuck could       wood?", paper.Text);
         }
@@ -96,9 +96,27 @@ namespace KataPencilDurability.Tests
         public void PaperText_WhenErased_RemovesLastInstanceOfCombinedWord()
         {
             var paper = new Paper("How much wood would a woodchuck chuck if a woodchuck could       wood?");
-            var pencil = new Pencil(new PencilProperties() { Paper = paper, PointDegradation = 10, MaxNumberOfSharpenings = 3 });
+            var pencil = new Pencil(new PencilProperties() { Paper = paper, PointDegradation = 10, MaxNumberOfSharpenings = 3, MaxEraserDegradation = 20 });
             pencil.Erase("chuck");
             Assert.AreEqual("How much wood would a woodchuck chuck if a wood      could       wood?", paper.Text);
+        }
+
+        [TestMethod, TestCategory("Pencil Erase")]
+        public void PaperText_WhenOutOfDegradation_RemovesPartialWord()
+        {
+            var paper = new Paper("Buffalo Bill");
+            var pencil = new Pencil(new PencilProperties() { Paper = paper, PointDegradation = 10, MaxNumberOfSharpenings = 3, MaxEraserDegradation = 3 });
+            pencil.Erase("Bill");
+            Assert.AreEqual("Buffalo B   ", paper.Text);
+        }
+
+        [TestMethod, TestCategory("Pencil Erase")]
+        public void Pencil_WithNoEraserLeft_Throws()
+        {
+            var paper = new Paper("Buffalo Bill");
+            var pencil = new Pencil(new PencilProperties() { Paper = paper, PointDegradation = 10, MaxNumberOfSharpenings = 3, MaxEraserDegradation = 4 });
+            pencil.Erase("Bill");
+            Assert.ThrowsException<Exception>(() => pencil.Erase("Buffalo"), "Eraser has been used up. Please buy a new pencil or eraser.");
         }
     }
 }
