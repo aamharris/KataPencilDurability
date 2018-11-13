@@ -1,4 +1,5 @@
-﻿using System;
+﻿using KataPencilDurability.Domain.Enums;
+using System;
 using System.Text.RegularExpressions;
 
 namespace KataPencilDurability.Domain
@@ -8,6 +9,8 @@ namespace KataPencilDurability.Domain
         public Pencil(PencilProperties properties)
         {
             Paper = properties.Paper;
+
+            ValidatePencilInitialize(properties); 
 
             MaxPointDegradation = properties.PointDegradation;
             PointDegradationRemaining = MaxPointDegradation;
@@ -27,49 +30,81 @@ namespace KataPencilDurability.Domain
         public int MaxEraserDegradation { get; private set; }
         public int EraserDegradationRemaining { get; private set; }
 
-        public void Write(string inputText)
+        private int eraseStartIndex { get; set; }
+
+        public void Write(string inputText, WritingMode writingMode = WritingMode.Add)
         {
+            if (writingMode == WritingMode.Edit && eraseStartIndex == -1)
+            {
+                throw new Exception("No text has been erased. Cannot Edit Text");
+            }
+
+            if (Paper == null)
+            {
+                throw new Exception("No paper was provided. Can not write without paper.");
+            }
+
             foreach (var letter in inputText)
             {
+                char outputChar = ' '; 
                 if (char.IsUpper(letter) && PointDegradationRemaining >= 2)
                 {
                     PointDegradationRemaining -= 2;
-                    Paper.Text += letter; 
+                    outputChar = letter; 
                 }
                 else if (char.IsLower(letter) && PointDegradationRemaining >= 1)
                 {
                     PointDegradationRemaining -= 1;
-                    Paper.Text += letter;
+                    outputChar = letter;
+                }
+
+                if (writingMode == WritingMode.Add)
+                {
+                    Paper.Text += outputChar;
                 }
                 else
                 {
-                    Paper.Text += " "; 
+                    char currentChar = Paper.Text[eraseStartIndex];
+                    if (!char.IsWhiteSpace(currentChar))
+                    {
+                        outputChar = '@'; 
+                    }
+
+                    Paper.Text = Paper.Text.Remove(eraseStartIndex, 1).Insert(eraseStartIndex, outputChar.ToString()); 
+                    eraseStartIndex += 1; 
                 }
             }
+
+            eraseStartIndex = -1;
         }
 
         public void Erase(string textToErase)
         {
-            if (EraserDegradationRemaining > 0)
+            if (Paper == null)
             {
-                string erasedText;
-                if (EraserDegradationRemaining < textToErase.Length)
-                {
-                    int eraseStartIndex = textToErase.Length - EraserDegradationRemaining;
-                    erasedText = textToErase.Remove(eraseStartIndex, EraserDegradationRemaining).Insert(eraseStartIndex, new string(' ', EraserDegradationRemaining)); 
-                }
-                else
-                {
-                    erasedText = new string(' ', textToErase.Length); 
-                }
-                
-                Paper.Text = Regex.Replace(Paper.Text, $"{textToErase}(?!.*{textToErase})", erasedText);
-                EraserDegradationRemaining -= erasedText.Length;
+                throw new Exception("No paper was provided. Can not erase without paper.");
             }
-            else
+
+            if (EraserDegradationRemaining == 0)
             {
                 throw new Exception("Eraser has been used up. Please buy a new pencil or eraser.");
             }
+
+            string erasedText;
+            if (EraserDegradationRemaining < textToErase.Length)
+            {
+                eraseStartIndex = textToErase.Length - EraserDegradationRemaining;
+                erasedText = textToErase.Remove(eraseStartIndex, EraserDegradationRemaining).Insert(eraseStartIndex, new string(' ', EraserDegradationRemaining)); 
+            }
+            else
+            {
+                erasedText = new string(' ', textToErase.Length); 
+            }
+            
+            eraseStartIndex = Regex.Match(Paper.Text, $"{textToErase}(?!.*{textToErase})").Index;
+
+            Paper.Text = Regex.Replace(Paper.Text, $"{textToErase}(?!.*{textToErase})", erasedText);
+            EraserDegradationRemaining -= erasedText.Length;                                                          
         }
 
         public void Sharpen()
@@ -82,6 +117,24 @@ namespace KataPencilDurability.Domain
             else
             {
                 throw new Exception("Pencil can not be sharpened anymore. Please buy a new pencil.");
+            }
+        }
+        
+        private void ValidatePencilInitialize(PencilProperties properties)
+        {
+            if (properties.PointDegradation <= 0)
+            {
+                throw new ArgumentOutOfRangeException("Point Degradation must be greater than 0");
+            }
+
+            if (properties.MaxNumberOfSharpenings < 0)
+            {
+                throw new ArgumentOutOfRangeException("Maximum sharpenings must be 0 or greater");
+            }
+
+            if (properties.MaxEraserDegradation <= 0)
+            {
+                throw new ArgumentOutOfRangeException("Eraser Degradation must be greater than 0");
             }
         }
     }
