@@ -8,6 +8,30 @@ namespace KataPencilDurability.Tests
     [TestClass]
     public class PencilTests
     {
+        [TestMethod, TestCategory("Pencil Initialize")]
+        public void Pencil_WhenInitializedWithNegativePointDegradation_Throws()
+        {
+            var paper = new Paper();
+            Assert.ThrowsException<ArgumentOutOfRangeException>(() => new Pencil(new PencilProperties() { Paper = new Paper(), PointDegradation = -1, MaxNumberOfSharpenings = 1, MaxEraserDegradation = 20 }),
+                "Point Degradation must be greater than 0");
+        }
+
+        [TestMethod, TestCategory("Pencil Initialize")]
+        public void Pencil_WhenInitializedWithNegativeMaxSharpenings_Throws()
+        {
+            var paper = new Paper();
+            Assert.ThrowsException<ArgumentOutOfRangeException>(() => new Pencil(new PencilProperties() { Paper = new Paper(), PointDegradation = 20, MaxNumberOfSharpenings = -1, MaxEraserDegradation = 20 }),
+                "Maximum sharpenings must be 0 or greater");
+        }
+
+        [TestMethod, TestCategory("Pencil Initialize")]
+        public void Pencil_WhenInitializedWithNegativeEraserDegradation_Throws()
+        {
+            var paper = new Paper();
+            Assert.ThrowsException<ArgumentOutOfRangeException>(() => new Pencil(new PencilProperties() { Paper = new Paper(), PointDegradation = 20, MaxNumberOfSharpenings = 1, MaxEraserDegradation = -20 }),
+                "Eraser Degradation must be greater than 0");
+        }
+
         [TestMethod, TestCategory("Pencil Write")]
         public void Pencil_WhenWritingText_AddsTextToExisitingPaperText()
         {
