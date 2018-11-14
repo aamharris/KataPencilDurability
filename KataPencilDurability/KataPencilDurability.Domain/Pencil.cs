@@ -34,49 +34,17 @@ namespace KataPencilDurability.Domain
 
         public void Write(string inputText, WritingMode writingMode = WritingMode.Add)
         {
-            if (writingMode == WritingMode.Edit && eraseStartIndex == -1)
-            {
-                throw new Exception("No text has been erased. Cannot Edit Text");
-            }
-
-            if (Paper == null)
-            {
-                throw new Exception("No paper was provided. Can not write without paper.");
-            }
+            ValidatePencilWrite(writingMode);
 
             foreach (var letter in inputText)
             {
-                char outputChar = ' '; 
-                if (char.IsUpper(letter) && PointDegradationRemaining >= 2)
-                {
-                    PointDegradationRemaining -= 2;
-                    outputChar = letter; 
-                }
-                else if (char.IsLower(letter) && PointDegradationRemaining >= 1)
-                {
-                    PointDegradationRemaining -= 1;
-                    outputChar = letter;
-                }
-
-                if (writingMode == WritingMode.Add)
-                {
-                    Paper.Text += outputChar;
-                }
-                else
-                {
-                    char currentChar = Paper.Text[eraseStartIndex];
-                    if (!char.IsWhiteSpace(currentChar))
-                    {
-                        outputChar = '@'; 
-                    }
-
-                    Paper.Text = Paper.Text.Remove(eraseStartIndex, 1).Insert(eraseStartIndex, outputChar.ToString()); 
-                    eraseStartIndex += 1; 
-                }
+                char outputChar = GetOutputCharacter(letter);
+                DeductPointDegradation(outputChar);
+                AddTextToPaper(writingMode, outputChar);
             }
 
             eraseStartIndex = -1;
-        }
+        }      
 
         public void Erase(string textToErase)
         {
@@ -136,6 +104,67 @@ namespace KataPencilDurability.Domain
             {
                 throw new ArgumentOutOfRangeException("Eraser Degradation must be greater than 0");
             }
+        }
+
+        private void ValidatePencilWrite(WritingMode writingMode)
+        {
+            if (writingMode == WritingMode.Edit && eraseStartIndex == -1)
+            {
+                throw new Exception("No text has been erased. Cannot Edit Text");
+            }
+
+            if (Paper == null)
+            {
+                throw new Exception("No paper was provided. Can not write without paper.");
+            }
+        }
+
+        private char GetOutputCharacter(char letter)
+        {
+            char outputChar = ' ';
+            if ((char.IsUpper(letter) && PointDegradationRemaining >= 2) || (char.IsLower(letter) && PointDegradationRemaining >= 1))
+            {
+                outputChar = letter;
+            }
+
+            return outputChar;
+        }
+
+        private void DeductPointDegradation(char letter)
+        {
+            if (char.IsUpper(letter))
+            {
+                PointDegradationRemaining -= 2;
+            }
+            
+            if (char.IsLower(letter))
+            {
+                PointDegradationRemaining -= 1;
+            }
+        }
+
+        private void AddTextToPaper(WritingMode writingMode, char outputChar)
+        {
+            if (writingMode == WritingMode.Add)
+            {
+                Paper.Text += outputChar;
+            }
+            else
+            {
+                if (HasCollisionWithExistingText())
+                {
+                    outputChar = '@'; 
+                }               
+
+                Paper.Text = Paper.Text.Remove(eraseStartIndex, 1).Insert(eraseStartIndex, outputChar.ToString());
+                eraseStartIndex += 1;
+            }
+        }
+
+        private bool HasCollisionWithExistingText()
+        {
+            char existingChar = Paper.Text[eraseStartIndex];
+            return !char.IsWhiteSpace(existingChar); 
         }
     }
 }
