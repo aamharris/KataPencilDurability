@@ -40,11 +40,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Interfaces\IEraser.cs" />
-    <Compile Include="Interfaces\IPencil.cs" />
-    <Compile Include="Ticonderoga.cs" />
+    <Compile Include="Constants\ExceptionMessages.cs" />
+    <Compile Include="Enums\WritingMode.cs" />
+    <Compile Include="Eraser.cs" />
+    <Compile Include="Paper.cs" />
+    <Compile Include="Pencil.cs" />
+    <Compile Include="PencilProperties.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
